@@ -23,7 +23,7 @@ ifeq (${HAVE_Z3},true)
 endif
 
 OCB=ocamlbuild -use-ocamlfind
-PACKAGES=-packages ocamlgraph,unix,nums,str
+PACKAGES=-pkgs ocamlgraph,unix,nums,str
 PP_OPTS=-pp "camlp4o pa_macro.cmo $(PP_OPTS_APRON) $(PP_OPTS_Z3)"
 
 OPTS=${PP_OPTS} -cflags -warn-error,+a
