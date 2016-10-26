@@ -1,7 +1,7 @@
 -include user.cfg
 
-HAVE_APRON?=true
-HAVE_Z3?=true
+HAVE_APRON?=false
+HAVE_Z3?=false
 
 LIBPATH_APRON=
 LIBS_APRON=
@@ -22,8 +22,8 @@ ifeq (${HAVE_Z3},true)
   PP_OPTS_Z3=-DHAVE_Z3
 endif
 
-LIBPATH=-cflags -I,+ocamlgraph -lflags -I,+ocamlgraph $(LIBPATH_APRON) $(LIBPATH_Z3)
-LIBS=-libs graph,unix,nums,str$(LIBS_APRON)$(LIBS_Z3)
+OCB=ocamlbuild -use-ocamlfind
+PACKAGES=-package ocamlgraph
 PP_OPTS=-pp "camlp4o pa_macro.cmo $(PP_OPTS_APRON) $(PP_OPTS_Z3)"
 
 OPTS=${PP_OPTS} -cflags -warn-error,+a
@@ -32,36 +32,36 @@ default: kittel koat
 
 all: kittel koat convert
 
-kittel: make_git_sha1 force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} kittel.native
+kittel: git_sha1.ml force_look
+	${OCB} ${OPTS} ${PACKAGES} kittel.native
 
-kittel.d.byte: make_git_sha1 force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} kittel.d.byte
+kittel.d.byte: git_sha1.ml force_look
+	${OCB} ${OPTS} ${PACKAGES} kittel.d.byte
 
-koat: make_git_sha1 force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} koat.native
+koat: git_sha1.ml force_look
+	${OCB} ${OPTS} ${PACKAGES} koat.native
 
-koat.d.byte: make_git_sha1 force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} koat.d.byte
+koat.d.byte: git_sha1.ml force_look
+	${OCB} ${OPTS} ${PACKAGES} koat.d.byte
 
 convert: force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} convert.native
+	${OCB} ${OPTS} ${PACKAGES} convert.native
 
 koatCConv: force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} koatCConv.native
+	${OCB} ${OPTS} ${PACKAGES} koatCConv.native
 
 koatFSTConv: force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} koatFSTConv.native
+	${OCB} ${OPTS} ${PACKAGES} koatFSTConv.native
 
 koatCESConv: force_look
-	ocamlbuild ${OPTS} ${LIBPATH} ${LIBS} koatCESConv.native
+	${OCB} ${OPTS} ${PACKAGES} koatCESConv.native
 
 clean: force_look
-	ocamlbuild -clean
+	${OCB} -clean
 	rm -f git_sha1.ml
 
-make_git_sha1: force_look
-	./make_git_sha1.sh git_sha1.ml
+git_sha1.ml: force_look
+	echo 'let git_sha1 = "6ee36da724f87fe70b75ee5743430f073af10853"' > $@
 
 force_look:
 	@true
